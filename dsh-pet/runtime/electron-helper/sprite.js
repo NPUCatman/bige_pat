@@ -70,6 +70,8 @@ class PetSprite {
     this.gen = 0;
     this.anim = this.animations.idle[0] ?? '';
     this.once = true;
+    this.animationCycle = this.animations.behavior ? new S.AnimationCycle(this.animations.behavior, this.anim) : null;
+    this.animationCycleTimer = null;
     // 播放回执（issue #122 第 3 项）：当前正在播的**第三方点播**编号（null = 自播动画，不上报）。
     // 为什么要单独一个字段：this.anim 只是动画名，右键菜单点播与第三方 /anim 可以播同名动画，
     // 光看名字分不出"这一段该不该上报回执"。
@@ -272,6 +274,8 @@ class PetSprite {
   }
 
   dispose() {
+    if (this.animationCycleTimer !== null) window.clearInterval(this.animationCycleTimer);
+    this.animationCycle?.cancel();
     this.ac.abort();
     this.inputRegionMutation.disconnect();
     this.inputRegionResize.disconnect();
@@ -468,6 +472,16 @@ class PetSprite {
   // 双缓冲切换（与浏览器同一套：前台 opacity 切换 + 降级视频清 handler 并停播，防残留 ended 雪崩）
   switchTo(next, nextOnce, playbackId, url) {
     if (!next) return;
+    if (this.animationCycle?.colliding && next !== this.animations.behavior.collision) {
+      if (playbackId) this.animationCycle.cancel();
+      else {
+        this.anim = this.animations.behavior.collision;
+        this.once = false;
+        return;
+      }
+    }
+    this.anim = next;
+    this.once = nextOnce;
     const pending = this.pending;
     if (pending && pending.anim === next && pending.once === nextOnce) {
       // 防重命中（单动画点击时目标=当前动画，不重播）：仍消费 Q 弹标记，压当前前台视频，
@@ -614,6 +628,10 @@ class PetSprite {
     // 解冻：回到"该播什么就播什么"——非终态工作状态回档位循环，否则回 idle 一次，
     // 播完由 handleEnded 接回随机链（与浏览器同一语义）。
     if (this.resumeWorkStatusAnim()) return;
+    if (this.animationCycle) {
+      this.playIdle();
+      return;
+    }
     if (this.animations.idle.length) this.playOnce(S.pick(this.animations.idle, this.anim));
   }
 
@@ -647,6 +665,28 @@ class PetSprite {
     // 等持锁者的下一条指令（那走 /anim，不经这里）。与浏览器 pickNext 同一处判断。
     if (this.frozen) return;
     this.stopMove();
+    if (this.animationCycle) {
+      this.playCycle(this.animationCycle.resume(Date.now(), this.anim));
+      if (this.animationCycleTimer === null) {
+        this.animationCycleTimer = window.setInterval(() => {
+          const now = Date.now();
+          if (
+            this.frozen ||
+            this.dragState.active ||
+            this.throwRef !== null ||
+            this.moveRef !== null ||
+            this.posFollow !== null ||
+            this.once ||
+            this.anim !== this.animationCycle.current ||
+            !this.animationCycle.due(now)
+          )
+            return;
+          this.playCycle(this.animationCycle.resume(now));
+          this.cycleMotion();
+        }, 250);
+      }
+      return;
+    }
     const { animations, animationWeights } = { animations: this.animations, animationWeights: this.weights };
     const roll = Math.random();
     // 宠物固定（pets[].fixedEnabled）：掷骰时把「转向 / 移动」两档权重按 0 算（与浏览器同一份
@@ -676,6 +716,35 @@ class PetSprite {
     this.playOnce(next);
   }
 
+  playCycle(name) {
+    this.anim = name;
+    this.once = false;
+    this.switchTo(name, false);
+  }
+
+  // 轮播表情与自主走位分开：每分钟仍按原权重决定转向/漫游，不另换短片。
+  cycleMotion() {
+    const kind = S.rollKind(Math.random(), this.weights, { fixed: this.pet.fixedEnabled });
+    if (kind === 'turn') {
+      this.facing = this.facing === 'left' ? 'right' : 'left';
+      for (const video of [this.videoA, this.videoB]) {
+        video.style.transform = this.facing === 'right' ? 'scaleX(-1)' : '';
+      }
+    } else if (kind === 'move') {
+      this.tryMove(undefined, undefined, true);
+    }
+  }
+
+  showCollision() {
+    const name = this.animationCycle?.hit();
+    if (name) this.playCycle(name);
+  }
+
+  finishCollision() {
+    const next = this.animationCycle?.settle(Date.now(), this.anim);
+    if (next && !this.frozen) this.playCycle(next);
+  }
+
   handleEnded() {
     // 播放回执：前台视频真的播完了 → 如实回 ended。放在拖拽守卫**之前**：
     // "播完了"是既成事实，拖拽守卫管的是动画链怎么推进，不该影响回执的准确性。
@@ -692,6 +761,16 @@ class PetSprite {
     // 带 anim 的气泡（默认就是 true），说话动画播完就把工作状态动画点回来，冻结形同虚设。
     // 播放回执已经在上面上报，不受这一行影响。
     if (this.frozen) return;
+    if (this.animationCycle) {
+      if (this.animationCycle.colliding) {
+        this.playCycle(this.animationCycle.resume());
+        return;
+      }
+      if (this.animations.turn.includes(this.anim)) this.facing = this.facing === 'left' ? 'right' : 'left';
+      if (this.resumeWorkStatusAnim()) return;
+      this.playIdle();
+      return;
+    }
     const { animations } = { animations: this.animations };
     // 事件动画播完：回 idle（与 drag/clicks 同分支，不进随机链）；气泡由定时器自动消失，与动画解耦
     const isEvent = S.isEventAnim(animations.events, this.anim);
@@ -763,7 +842,7 @@ class PetSprite {
 
   // ---- 漫游（rAF 驱动，动画首尾各 leadSec/tailSec 秒原地不动；几何在 shared/planMove） ----
   // preferredName 传入时固定使用该动画（右键菜单点播移动动画），否则与随机链一致随机选
-  tryMove(preferredName, playbackId) {
+  tryMove(preferredName, playbackId, keepCycleAnimation = false) {
     if (this.moveRef !== null || this.pendingMove || this.throwRef !== null) return true;
     const moves = this.animations.moves;
     const actions = moves.actions;
@@ -803,6 +882,11 @@ class PetSprite {
     });
     if (!plan) return false;
     this.pendingMove = { ...plan, dir, leadSec: mp.leadSec, tailSec: mp.tailSec };
+    if (keepCycleAnimation) {
+      // 新周期视频尚在加载时，原 onReady 会在首帧到位后接上同一场位移。
+      if (!this.pending) this.startMoveDrive(this.front === 0 ? this.videoA : this.videoB);
+      return this.anim;
+    }
     this.anim = chosen.name;
     this.once = true;
     this.switchTo(chosen.name, true, playbackId);
@@ -892,13 +976,14 @@ class PetSprite {
   /** 停止抛掷（空中被抓/点菜单/回家时立即定格在当前落点）。
    *  同时清速度状态 throwState——否则「抓住后温柔放下」会残留最后一次飞行速度，
    *  静止的宠物点一下就误判为飞行中。点击积分用的飞行动态由 onPointerDown 提前记录。 */
-  stopThrow() {
+  stopThrow(preserveCollision = false) {
     this.throwToken++;
     if (this.throwRef !== null) {
       cancelAnimationFrame(this.throwRef);
       this.throwRef = null;
     }
     this.throwState = null;
+    if (!preserveCollision) this.finishCollision();
   }
 
   /** 抛掷驱动：重力 + 边缘反弹 + 落地摩擦，落定后写入 customPos */
@@ -922,6 +1007,7 @@ class PetSprite {
       // 每帧重取：显示器变化时 relayout() 会让缓存失效，res.screen 必须与这一份对应
       const sp = this.throwSpaceOf();
       const res = S.throwStepRegion(state, dt, sp, this.physics, lockScreen);
+      if (res.bounced) this.showCollision();
       state = { x: res.x, y: res.y, vx: res.vx, vy: res.vy };
       this.throwState = state;
       // 上报飞行状态（节流 ~30ms）：主进程 broker 汇聚后广播，其它窗口用它做跨窗碰撞检测；
@@ -950,6 +1036,7 @@ class PetSprite {
             { x: o.x, y: o.y, vx: o.vx, vy: o.vy, size: o.size },
           );
           if (hit) {
+            this.showCollision();
             // 飞行方：按动量结果继续弹开；被撞方：主进程转发给目标窗口 → 目标窗 startThrow
             state.vx = hit.fvx;
             state.vy = hit.fvy;
@@ -977,6 +1064,7 @@ class PetSprite {
         this.throwState = null;
         this.customPos = { rx: (this.pos.x + this.halfW) / VIEW.w, ry: (this.pos.y + this.halfH) / VIEW.h };
         window.__dshPetDebug.lastDragRelease = { x: this.pos.x, y: this.pos.y };
+        this.finishCollision();
         return;
       }
       this.throwRef = requestAnimationFrame(step);
@@ -1086,8 +1174,9 @@ class PetSprite {
   onDeskHit(vx, vy) {
     this.stopMove();
     this.stopDragFollow();
-    this.stopThrow();
+    this.stopThrow(true);
     this.startThrow(this.pos.x, this.pos.y, vx, vy);
+    this.showCollision();
   }
 
   /** Q 弹挤压：前台视频垂直压扁（贴地锚定，transform-origin:bottom）再回弹；
@@ -1291,7 +1380,8 @@ class PetSprite {
       // 修复：旧实现 switchTo(idle,false)（loop=true，ended 永不触发）→ 随机链永远回不来，
       // 永远卡在同一段待机动画；改为 playOnce（once=true）播一遍 → ended → handleEnded → playIdle 随机链
       if (!this.resumeWorkStatusAnim()) {
-        if (this.animations.idle.length) this.playOnce(S.pick(this.animations.idle, this.anim));
+        if (this.animationCycle) this.playIdle();
+        else if (this.animations.idle.length) this.playOnce(S.pick(this.animations.idle, this.anim));
       }
       // 释放位置 = 弹簧跟随后的实际包围盒左上角（this.pos 实时；不是指针目标——
       // 跟手滞后时落点跟随宠物实际位置，与浏览器 boxPx 同语义）

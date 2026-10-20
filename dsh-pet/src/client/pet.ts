@@ -14,6 +14,7 @@ import {
   nextWorkStatusAnim,
 } from '../shared/pickers';
 import { planMove } from '../shared/motion';
+import { AnimationCycle } from '../shared/animation-cycle';
 import { flattenConfigPets, isWebVisible } from '../shared/config';
 import { balanceEventIndex, balancePercent, decideBalanceNotice, type BalanceState } from '../shared/balance';
 // 轮询统一状态 S：前端唯一的数据来源与渲染入口（拉取 / 拍平 / 比对都在 shared，两端同一份）
@@ -232,10 +233,14 @@ export function makePetUI(rt: {
     // 即内置默认池）——成品绝对正确，直接读，不做任何回落
     const petAnims = cfg.animations;
     const petWeights = cfg.animationWeights;
+    const cycleRef = useRef<AnimationCycle | null>(
+      petAnims.behavior ? new AnimationCycle(petAnims.behavior, petAnims.idle[0] ?? '') : null,
+    );
+    const cycleConfigRef = useRef(petAnims.behavior);
 
     // ---- React 状态 ----
-    const [anim, setAnim] = useState(petAnims.idle[0] ?? '');
-    const [once, setOnce] = useState(true);
+    const [anim, setAnim] = useState(cycleRef.current?.current ?? petAnims.idle[0] ?? '');
+    const [once, setOnce] = useState(cycleRef.current === null);
     const [facing, setFacing] = useState('left' as 'left' | 'right');
     const [dragging, setDragging] = useState(false);
     // 悬浮提示显隐（鼠标进/出命中区翻转；指针捕获期间由拖拽逻辑主动收起，见 handlePointerDown）
@@ -330,6 +335,8 @@ export function makePetUI(rt: {
     const pendingSquashRef = useRef(false);
     const animRef = useRef(anim);
     animRef.current = anim;
+    const onceRef = useRef(once);
+    onceRef.current = once;
     // workStatus 最新值同步：handleEnded 的 onended 闭包注册时可能早于状态更新，护栏用 ref 读当前值
     const workStatusRef = useRef(workStatus);
     workStatusRef.current = workStatus;
@@ -339,6 +346,19 @@ export function makePetUI(rt: {
     // 卸载时统一 abort——否则卸载后完成的 fetch 会再创建 blob URL 且无人 revoke（泄漏到页面销毁）。
     const mountedRef = useRef(false);
     const inflightRef = useRef<AbortController[]>([]);
+
+    useEffect(() => {
+      if (cycleConfigRef.current === petAnims.behavior) return;
+      cycleConfigRef.current = petAnims.behavior;
+      const cycle = petAnims.behavior ? new AnimationCycle(petAnims.behavior, animRef.current) : null;
+      cycleRef.current = cycle;
+      if (cycle) {
+        setAnim(cycle.current);
+        setOnce(false);
+      } else {
+        setOnce(true);
+      }
+    }, [petAnims.behavior]);
 
     /**
      * 播放回执上报（issue #122 第 3 项）：把这一段点播的**真实**状态告诉 host。
@@ -367,6 +387,11 @@ export function makePetUI(rt: {
       const cueUrl = cueUrlRef.current;
       cueUrlRef.current = null;
       if (!next) return;
+      const cycle = cycleRef.current;
+      if (cycle?.colliding && next !== petAnims.behavior?.collision) {
+        if (cuePlaybackId !== null) cycle.cancel();
+        else return; // 碰撞期间保留呆滞；气泡和工作状态快照仍照常更新。
+      }
       const pending = pendingRef.current;
       if (pending && pending.anim === next && pending.once === nextOnce) {
         // 防重命中（单动画点击时目标=当前动画，不重播）：仍消费 Q 弹标记，压当前前台视频，
@@ -511,7 +536,7 @@ export function makePetUI(rt: {
           pendingSquashRef.current = false;
           startSquash(el);
         }
-        if (pendingMoveRef.current) startMoveDrive(el);
+        if (pendingMoveRef.current) startMoveDrive(el, next);
       };
       el.addEventListener('loadeddata', onReady);
     };
@@ -908,12 +933,30 @@ export function makePetUI(rt: {
       return () => window.removeEventListener('resize', onResize);
     }, []);
 
+    // behavior 模式在两次换表情之间循环当前片段，短片播完不再掷骰。
+    const resumeAnimationCycle = (): boolean => {
+      const cycle = cycleRef.current;
+      if (!cycle) return false;
+      if (cycle.colliding) return true;
+      setAnim(cycle.resume(Date.now(), animRef.current));
+      setOnce(false);
+      setSeq((s) => s + 1);
+      return true;
+    };
+    const showCollisionAnimation = (): void => {
+      const name = cycleRef.current?.hit();
+      if (!name) return;
+      setAnim(name);
+      setOnce(false);
+    };
+
     // ---- 动画链：播完按权重选下一个 ----
     const pickNext = () => {
       // 占用锁（issue #122 第 4 项）：锁生效时**不掷骰**。这里是随机链的**唯一**入口
       // （只有动画播完才会走到），所以一句判断就把随机动画、随机转向、自主走位一起停住——
       // 宠物停在最后一帧，等持锁者的下一条指令（那走 /anim，不经这里）。
       if (frozenRef.current) return;
+      if (resumeAnimationCycle()) return;
       const animations = petAnims;
       const animationWeights = petWeights;
       const roll = Math.random();
@@ -1019,6 +1062,17 @@ export function makePetUI(rt: {
       // 把工作状态动画点回来——只要用户在跑任务，冻结就形同虚设。
       // 播放回执已经在上面上报，不受这一行影响。
       if (frozenRef.current) return;
+      if (cycleRef.current) {
+        if (cycleRef.current.colliding) return;
+        if (animations.turn.includes(animRef.current)) {
+          const next = facingRef.current === 'left' ? 'right' : 'left';
+          setFacing(next);
+          facingRef.current = next;
+        }
+        if (resumeWorkStatusAnim()) return;
+        resumeAnimationCycle();
+        return;
+      }
       // 事件动画播完：回 idle（与 drag/clicks 同分支，不进入随机链）；气泡由定时器自动消失，与动画解耦
       const isEvent = isEventAnim(animations.events, animRef.current);
       // 工作状态循环护栏：非终态档位（thinking/working/result/waiting）期间，workStatus 事件动画
@@ -1106,6 +1160,7 @@ export function makePetUI(rt: {
       totalRatio: number;
       leadSec: number;
       tailSec: number;
+      awaitAnimation?: string;
     }>(null);
     const customPosRef = useRef(customPos);
     customPosRef.current = customPos;
@@ -1125,9 +1180,10 @@ export function makePetUI(rt: {
       return window.innerHeight - 20 - halfH;
     };
 
-    const startMoveDrive = (el: HTMLVideoElement) => {
+    const startMoveDrive = (el: HTMLVideoElement, readyAnimation: string) => {
       const pm = pendingMoveRef.current;
       if (!pm || moveRef.current !== null) return;
+      if (pm.awaitAnimation !== undefined && pm.awaitAnimation !== readyAnimation) return;
       pendingMoveRef.current = null;
       const { startRatio, startYRatio, targetRatio, dir, totalRatio, leadSec, tailSec } = pm;
       const duration = Number.isFinite(el.duration) && el.duration > 0 ? el.duration : 10.09;
@@ -1162,7 +1218,7 @@ export function makePetUI(rt: {
 
     /** 尝试发起一次移动：占用中返回 true（不重播），无法移动返回 false，成功返回动作名（供日志显示具体动作）。
      *  preferredName 传入时固定使用该动画（右键菜单点播移动动画），否则与随机链一致随机从 moves.actions 选。 */
-    const tryMove = (preferredName?: string): boolean | string => {
+    const tryMove = (preferredName?: string, keepCycleAnimation = false): boolean | string => {
       if (moveRef.current !== null || pendingMoveRef.current || throwRef.current !== null) return true;
       const moves = petAnims.moves;
       const actions = moves.actions;
@@ -1200,9 +1256,12 @@ export function makePetUI(rt: {
         dir,
         leadSec: mp.leadSec,
         tailSec: mp.tailSec,
+        awaitAnimation: keepCycleAnimation ? cycleRef.current?.current : undefined,
       };
-      setOnce(true);
-      setAnim(chosen.name);
+      if (!keepCycleAnimation) {
+        setOnce(true);
+        setAnim(chosen.name);
+      }
       return chosen.name;
     };
     const stopMove = () => {
@@ -1231,13 +1290,22 @@ export function makePetUI(rt: {
     /** 停止抛掷（宠物在空中被抓住/点菜单/回家时立即定格在当前落点）。
      *  同时清速度状态 throwStateRef——否则「抓住后温柔放下」会残留最后一次飞行速度，
      *  静止的宠物点一下就误判为飞行中。点击积分用的飞行动态由 pointerdown 提前记录。 */
-    const stopThrow = () => {
+    const stopThrow = (preserveCollision = false) => {
       throwTokenRef.current++;
       if (throwRef.current !== null) {
         cancelAnimationFrame(throwRef.current);
         throwRef.current = null;
       }
       throwStateRef.current = null;
+      const cycle = cycleRef.current;
+      if (!preserveCollision && cycle?.colliding) {
+        const next = cycle.settle(Date.now(), animRef.current);
+        if (next && mountedRef.current) {
+          setAnim(next);
+          setOnce(false);
+          setSeq((s) => s + 1);
+        }
+      }
     };
     /** rAF 弹簧跟随：包围盒朝拖拽目标（指针-抓取偏移）过阻尼追赶，抹平高频抖动 */
     const startDragFollow = (rootEl: HTMLDivElement) => {
@@ -1289,6 +1357,7 @@ export function makePetUI(rt: {
         const res = throwStep(state, dt, bounds, cfg.physics);
         state = { x: res.x, y: res.y, vx: res.vx, vy: res.vy };
         throwStateRef.current = state;
+        if (res.bounced) showCollisionAnimation();
         // ---- 宠物间碰撞（仅 petCollision 开启）：飞行中的自己被甩出时撞到其它宠物 ----
         if (cfg.physics.petCollision) {
           const myBody = bodyPixelBox({ x: state.x, y: state.y, size, bottomPad });
@@ -1314,6 +1383,7 @@ export function makePetUI(rt: {
               state.vx = hit.fvx;
               state.vy = hit.fvy;
               throwStateRef.current = state;
+              showCollisionAnimation();
               slot.onHit(hit.hvx, hit.hvy);
               break; // 一帧只处理一次碰撞（避免连锁触发抖动）
             }
@@ -1341,6 +1411,12 @@ export function makePetUI(rt: {
           throwRef.current = null;
           throwStateRef.current = null;
           setCustomPos(customPosRef.current);
+          const settled = cycleRef.current?.settle(Date.now(), animRef.current);
+          if (settled) {
+            setAnim(settled);
+            setOnce(false);
+            setSeq((s) => s + 1);
+          }
           return;
         }
         throwRef.current = requestAnimationFrame(step);
@@ -1358,6 +1434,44 @@ export function makePetUI(rt: {
      *  （指针一直喂目标），这条有终点，收敛/到点后必须自己收掉，否则 rAF 永远转下去。 */
     const posFollowRef = useRef<number | null>(null);
     const posFollowTokenRef = useRef(0);
+
+    const cycleTickRef = useRef<() => void>(() => {});
+    cycleTickRef.current = () => {
+      const cycle = cycleRef.current;
+      const now = Date.now();
+      if (
+        !cycle ||
+        cycle.colliding ||
+        frozenRef.current ||
+        dragRef.current.active ||
+        throwRef.current !== null ||
+        moveRef.current !== null ||
+        pendingMoveRef.current !== null ||
+        posFollowRef.current !== null ||
+        onceRef.current ||
+        animRef.current !== cycle.current ||
+        !cycle.due(now)
+      ) {
+        return;
+      }
+      setAnim(cycle.resume(now, animRef.current));
+      setOnce(false);
+      setSeq((s) => s + 1);
+      // 定时换表情与自主动作各自独立：转向和漫游仍按原权重抽取，不借动作名切换 GIF。
+      const kind = rollKind(Math.random(), petWeights, { fixed: cfg.fixedEnabled });
+      if (kind === 'turn') {
+        const nextFacing = facingRef.current === 'left' ? 'right' : 'left';
+        facingRef.current = nextFacing;
+        setFacing(nextFacing);
+      } else if (kind === 'move') {
+        tryMove(undefined, true);
+      }
+    };
+    useEffect(() => {
+      if (!petAnims.behavior) return;
+      const timer = window.setInterval(() => cycleTickRef.current(), 250);
+      return () => window.clearInterval(timer);
+    }, [petAnims.behavior]);
 
     const stopPosFollow = () => {
       posFollowTokenRef.current++;
@@ -1450,6 +1564,7 @@ export function makePetUI(rt: {
      */
     const applyThrowCue = (angleDeg: number, power: number) => {
       if (dragRef.current.active) return; // 用户交互优先
+      stopThrow();
       const { vx, vy } = throwVelocity(angleDeg, power);
       const box = boxPxRef.current ?? { x: currentCenterX() - halfW, y: currentCenterY() - halfH };
       startThrow(box.x, box.y, vx, vy);
@@ -1457,7 +1572,8 @@ export function makePetUI(rt: {
     const onPetHit = (vx: number, vy: number) => {
       stopMove();
       stopDragFollow();
-      stopThrow();
+      stopThrow(true);
+      showCollisionAnimation();
       const bx = boxPxRef.current;
       let sx = 0;
       let sy = 0;
@@ -1592,6 +1708,7 @@ export function makePetUI(rt: {
       // 解冻：回到"该播什么就播什么"——非终态工作状态回档位循环，否则回 idle 一次，
       // 播完由 handleEnded 接回随机链（与点击/拖拽结束后的恢复同一条路）。
       if (resumeWorkStatusAnim()) return;
+      if (resumeAnimationCycle()) return;
       if (petAnims.idle.length) {
         setAnim(pick(petAnims.idle, animRef.current));
         setOnce(true);
@@ -1784,7 +1901,7 @@ export function makePetUI(rt: {
         if (stageEl) stageEl.style.transform = 'translateY(' + bottomPad + 'px)';
         // 拖拽松手：workStatus 非终态时恢复状态循环；否则播一遍待机 → ended → 回随机链
         // （once=true；旧实现 once=false 无限循环，ended 永不触发、随机链永远回不来——历史卡死 bug）
-        if (!resumeWorkStatusAnim()) {
+        if (!resumeWorkStatusAnim() && !resumeAnimationCycle()) {
           if (petAnims.idle.length) setAnim(pick(petAnims.idle, animRef.current));
           setOnce(true);
         }

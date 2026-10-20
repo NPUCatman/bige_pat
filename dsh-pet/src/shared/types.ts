@@ -60,6 +60,8 @@ export interface Weights {
 
 /** config.jsonc 的 animations 段 */
 export interface Animations {
+  /** 可选的定时表情轮播；未配置的宠物保留原来的短片结束随机链。 */
+  behavior?: { intervalSec: number; random: string[]; collision: string };
   idle: string[];
   turn: string[];
   drag: string[];

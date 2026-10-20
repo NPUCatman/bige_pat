@@ -53,3 +53,4 @@ desktop.ini
 .local/
 test-results/
 playwright-report/
+dist/

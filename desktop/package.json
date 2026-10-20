@@ -1,0 +1,9 @@
+{
+  "name": "bige-pet-desktop",
+  "productName": "比格桌宠",
+  "version": "0.1.0",
+  "description": "比格桌宠 Windows 便携启动器",
+  "private": true,
+  "main": "main.cjs",
+  "license": "MIT"
+}

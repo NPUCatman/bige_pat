@@ -10,7 +10,14 @@
     "check": "node scripts/start-bige.mjs --check",
     "build": "npm --prefix dsh-pet run build",
     "test": "npm --prefix dsh-pet test",
-    "assets": "python scripts/build_bige_assets.py"
+    "assets": "python scripts/build_bige_assets.py",
+    "package:win": "node scripts/package-win.mjs"
   },
-  "engines": { "node": ">=22.12.0" }
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "devDependencies": {
+    "rcedit": "5.0.2",
+    "yazl": "3.3.1"
+  }
 }

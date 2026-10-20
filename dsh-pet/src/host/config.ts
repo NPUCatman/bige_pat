@@ -247,6 +247,18 @@ export function readPetConfigEntry(
 function animationsValid(a: unknown): boolean {
   if (!a || typeof a !== 'object') return false;
   const anims = a as Record<string, unknown>;
+  if (anims.behavior !== undefined) {
+    const b = anims.behavior;
+    if (!b || typeof b !== 'object' || Array.isArray(b)) return false;
+    const cycle = b as Record<string, unknown>;
+    if (typeof cycle.intervalSec !== 'number' || !Number.isFinite(cycle.intervalSec) || cycle.intervalSec <= 0)
+      return false;
+    if (typeof cycle.collision !== 'string' || cycle.collision.length === 0) return false;
+    if (!Array.isArray(cycle.random) || cycle.random.length < 2) return false;
+    if (cycle.random.some((name) => typeof name !== 'string' || name.length === 0 || name === cycle.collision))
+      return false;
+    if (new Set(cycle.random).size < 2) return false;
+  }
   for (const key of ['idle', 'turn', 'drag', 'clicks']) {
     if (!Array.isArray(anims[key])) return false;
   }

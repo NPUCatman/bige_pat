@@ -31,7 +31,7 @@
   },
   "animation_map": {
     "path": "scripts/bige-animation-map.json",
-    "sha256": "1aee7df7b1eb373e02ccd7c30e5e6e975f67e769392f96c78339ee066cd7ec25"
+    "sha256": "a6908e576e3a639afda2c55d42ab9c1f63cff47612bf0487f71bf54f78468783"
   },
   "animations": [
     {
@@ -902,10 +902,10 @@
     },
     {
       "name": "工作状态-思考",
-      "source_animation": "呆滞",
-      "source_gif": "gif/呆滞.gif",
+      "source_animation": "安静待机",
+      "source_gif": "gif/安静待机.gif",
       "path": "dsh-pet/assets/webm/工作状态-思考.webm",
-      "sha256": "2aeda56e86795511e23e343e7991a6db66a64b22df00ad8d55b7d6eda29f2ec8"
+      "sha256": "bc39de5cf66e4e4a94bb7ea1c1aa5db89f43f5074675ba6fdedc9fafacc966b5"
     },
     {
       "name": "工作状态-忙碌",

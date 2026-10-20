@@ -77,6 +77,36 @@ function animationsWithEvents(events: unknown): Record<string, unknown> {
   return { ...BASE.animations, events };
 }
 
+describe('readAllConfig —— 可选定时表情规则', () => {
+  const behavior = { intervalSec: 60, random: ['安静', '开心'], collision: '呆滞' };
+  test('合法配置完整保留，非法周期/空池/重复池/碰撞入池整段回退', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'dsh-pet-cycle-config-'));
+    const paths = {
+      defaultFile: join(dir, 'default.jsonc'),
+      userFile: join(dir, 'main.jsonc'),
+      petDir: join(dir, 'pet'),
+    };
+    try {
+      writeFileSync(paths.defaultFile, JSON.stringify(BASE));
+      for (const value of [
+        behavior,
+        { ...behavior, intervalSec: 0 },
+        { ...behavior, intervalSec: '60' },
+        { ...behavior, random: [] },
+        { ...behavior, random: ['安静', '安静'] },
+        { ...behavior, random: ['安静', '呆滞'] },
+        { ...behavior, collision: '' },
+      ]) {
+        writeFileSync(paths.userFile, JSON.stringify({ animations: { ...BASE.animations, behavior: value } }));
+        const merged = readAllConfig(paths).main.animations as { behavior?: unknown };
+        assert.deepEqual(merged.behavior, value === behavior ? behavior : undefined);
+      }
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+});
+
 interface Suite {
   overlay: Record<string, unknown>;
   /** 期望合并后 events.workStatus 与哪个对象一致 */
