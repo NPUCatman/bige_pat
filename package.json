@@ -1,0 +1,16 @@
+{
+  "name": "bige-pat-local",
+  "version": "0.1.0",
+  "private": true,
+  "description": "使用比格动作素材的本地桌宠，基于 dsh-pet 0.3.7",
+  "type": "module",
+  "scripts": {
+    "start": "node scripts/start-bige.mjs",
+    "stop": "node scripts/stop-bige.mjs",
+    "check": "node scripts/start-bige.mjs --check",
+    "build": "npm --prefix dsh-pet run build",
+    "test": "npm --prefix dsh-pet test",
+    "assets": "python scripts/build_bige_assets.py"
+  },
+  "engines": { "node": ">=22.12.0" }
+}

@@ -1,0 +1,1128 @@
+{
+  "schema_version": 1,
+  "generator": "scripts/build_bige_assets.py",
+  "dependencies": {
+    "Pillow": "9.4.0",
+    "ffmpeg": "ffmpeg version 8.1.1-full_build-www.gyan.dev Copyright (c) 2000-2026 the FFmpeg developers",
+    "ffprobe": "ffprobe version 8.1.1-full_build-www.gyan.dev Copyright (c) 2007-2026 the FFmpeg developers"
+  },
+  "parameters": {
+    "canvas": [
+      640,
+      360
+    ],
+    "hit_box": [
+      200,
+      50,
+      440,
+      335
+    ],
+    "max_content": [
+      232,
+      260
+    ],
+    "feet_y": 330,
+    "minimum_duration_ms": 1000,
+    "background": "transparent; source alpha preserved; no white removal",
+    "placement": "One union crop, scale and offset per entire animation",
+    "timing": "CFR at the GCD of source frame durations; repeat whole cycles only",
+    "codec": "VP9 lossless mode; RGBA converted to yuva420p",
+    "alpha_validation": "same bounds; transparency 0..255; max rounding error 1/255"
+  },
+  "animation_map": {
+    "path": "scripts/bige-animation-map.json",
+    "sha256": "1aee7df7b1eb373e02ccd7c30e5e6e975f67e769392f96c78339ee066cd7ec25"
+  },
+  "animations": [
+    {
+      "name": "你真棒",
+      "source": "gif/你真棒.gif",
+      "source_sha256": "e994267440a5364b4dbbf9e6d963bd7d1f3da7ddb4eaba624f22dbb4b2bd79bf",
+      "source_size": [
+        240,
+        240
+      ],
+      "source_frames": 5,
+      "source_durations_ms": [
+        50,
+        50,
+        50,
+        50,
+        50
+      ],
+      "source_alpha_union_bbox": [
+        32,
+        53,
+        214,
+        197
+      ],
+      "transform": {
+        "scale": 1.2747252747252746,
+        "resized_size": [
+          232,
+          184
+        ],
+        "offset": [
+          204,
+          146
+        ],
+        "normalized_alpha_bbox": [
+          204,
+          146,
+          436,
+          330
+        ]
+      },
+      "video": {
+        "source_cycle_ms": 250,
+        "repeat_cycles": 4,
+        "output_duration_ms": 1000,
+        "tick_ms": 50,
+        "output_fps": "20",
+        "output_frames": 20,
+        "probe": {
+          "programs": [],
+          "stream_groups": [],
+          "streams": [
+            {
+              "codec_name": "vp9",
+              "width": 640,
+              "height": 360,
+              "r_frame_rate": "20/1",
+              "nb_read_frames": "20",
+              "tags": {
+                "ALPHA_MODE": "1"
+              }
+            }
+          ],
+          "format": {
+            "duration": "1.000000"
+          }
+        },
+        "decoded_alpha_verified": true,
+        "max_decoded_alpha_error_255": 1,
+        "decoded_alpha_bbox": [
+          204,
+          146,
+          436,
+          330
+        ],
+        "sha256": "c47299952843cacde479bd7db2879203094298a1212ef6e2d880e646a69ad59d",
+        "path": "dsh-pet/assets/webm/你真棒.webm"
+      }
+    },
+    {
+      "name": "呆滞",
+      "source": "gif/呆滞.gif",
+      "source_sha256": "f982ba5481c0e3234f0efb94535c564f8d84058a156cc4144e8e32c7abc55f18",
+      "source_size": [
+        86,
+        86
+      ],
+      "source_frames": 2,
+      "source_durations_ms": [
+        10100,
+        100
+      ],
+      "source_alpha_union_bbox": [
+        1,
+        13,
+        86,
+        86
+      ],
+      "transform": {
+        "scale": 2.7294117647058824,
+        "resized_size": [
+          232,
+          199
+        ],
+        "offset": [
+          204,
+          131
+        ],
+        "normalized_alpha_bbox": [
+          204,
+          131,
+          436,
+          330
+        ]
+      },
+      "video": {
+        "source_cycle_ms": 10200,
+        "repeat_cycles": 1,
+        "output_duration_ms": 10200,
+        "tick_ms": 100,
+        "output_fps": "10",
+        "output_frames": 102,
+        "probe": {
+          "programs": [],
+          "stream_groups": [],
+          "streams": [
+            {
+              "codec_name": "vp9",
+              "width": 640,
+              "height": 360,
+              "r_frame_rate": "10/1",
+              "nb_read_frames": "102",
+              "tags": {
+                "ALPHA_MODE": "1"
+              }
+            }
+          ],
+          "format": {
+            "duration": "10.200000"
+          }
+        },
+        "decoded_alpha_verified": true,
+        "max_decoded_alpha_error_255": 1,
+        "decoded_alpha_bbox": [
+          204,
+          131,
+          436,
+          330
+        ],
+        "sha256": "2aeda56e86795511e23e343e7991a6db66a64b22df00ad8d55b7d6eda29f2ec8",
+        "path": "dsh-pet/assets/webm/呆滞.webm"
+      }
+    },
+    {
+      "name": "安静待机",
+      "source": "gif/安静待机.gif",
+      "source_sha256": "8407bb86c6a026eb9d77f9fde92de497d86c58c999a8ca0fe4e2d07b5b6c30d6",
+      "source_size": [
+        240,
+        240
+      ],
+      "source_frames": 11,
+      "source_durations_ms": [
+        120,
+        40,
+        40,
+        40,
+        80,
+        40,
+        40,
+        80,
+        80,
+        40,
+        80
+      ],
+      "source_alpha_union_bbox": [
+        41,
+        40,
+        200,
+        214
+      ],
+      "transform": {
+        "scale": 1.4591194968553458,
+        "resized_size": [
+          232,
+          254
+        ],
+        "offset": [
+          204,
+          76
+        ],
+        "normalized_alpha_bbox": [
+          204,
+          76,
+          436,
+          330
+        ]
+      },
+      "video": {
+        "source_cycle_ms": 680,
+        "repeat_cycles": 2,
+        "output_duration_ms": 1360,
+        "tick_ms": 40,
+        "output_fps": "25",
+        "output_frames": 34,
+        "probe": {
+          "programs": [],
+          "stream_groups": [],
+          "streams": [
+            {
+              "codec_name": "vp9",
+              "width": 640,
+              "height": 360,
+              "r_frame_rate": "25/1",
+              "nb_read_frames": "34",
+              "tags": {
+                "ALPHA_MODE": "1"
+              }
+            }
+          ],
+          "format": {
+            "duration": "1.360000"
+          }
+        },
+        "decoded_alpha_verified": true,
+        "max_decoded_alpha_error_255": 1,
+        "decoded_alpha_bbox": [
+          204,
+          76,
+          436,
+          330
+        ],
+        "sha256": "bc39de5cf66e4e4a94bb7ea1c1aa5db89f43f5074675ba6fdedc9fafacc966b5",
+        "path": "dsh-pet/assets/webm/安静待机.webm"
+      }
+    },
+    {
+      "name": "拒绝",
+      "source": "gif/拒绝.gif",
+      "source_sha256": "51d0a25040819136b6e5892f47b0637bc27f75e9b4bf9bc1b814e3215f2af3c4",
+      "source_size": [
+        240,
+        240
+      ],
+      "source_frames": 37,
+      "source_durations_ms": [
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40,
+        40
+      ],
+      "source_alpha_union_bbox": [
+        0,
+        17,
+        240,
+        228
+      ],
+      "transform": {
+        "scale": 0.9666666666666667,
+        "resized_size": [
+          232,
+          204
+        ],
+        "offset": [
+          204,
+          126
+        ],
+        "normalized_alpha_bbox": [
+          204,
+          126,
+          436,
+          330
+        ]
+      },
+      "video": {
+        "source_cycle_ms": 1480,
+        "repeat_cycles": 1,
+        "output_duration_ms": 1480,
+        "tick_ms": 40,
+        "output_fps": "25",
+        "output_frames": 37,
+        "probe": {
+          "programs": [],
+          "stream_groups": [],
+          "streams": [
+            {
+              "codec_name": "vp9",
+              "width": 640,
+              "height": 360,
+              "r_frame_rate": "25/1",
+              "nb_read_frames": "37",
+              "tags": {
+                "ALPHA_MODE": "1"
+              }
+            }
+          ],
+          "format": {
+            "duration": "1.480000"
+          }
+        },
+        "decoded_alpha_verified": true,
+        "max_decoded_alpha_error_255": 1,
+        "decoded_alpha_bbox": [
+          204,
+          126,
+          436,
+          330
+        ],
+        "sha256": "87d9377faf104c4a0af871aa88fc993922b49450b2372b22ded3b630c5a4ec67",
+        "path": "dsh-pet/assets/webm/拒绝.webm"
+      }
+    },
+    {
+      "name": "正常挂机中",
+      "source": "gif/正常挂机中.gif",
+      "source_sha256": "482d5be80d8d704ecb025e50e34a892a922633c315f2c8ffa5c750d8c0c3f2cf",
+      "source_size": [
+        240,
+        240
+      ],
+      "source_frames": 23,
+      "source_durations_ms": [
+        240,
+        40,
+        120,
+        40,
+        40,
+        120,
+        40,
+        40,
+        40,
+        80,
+        40,
+        80,
+        40,
+        40,
+        40,
+        40,
+        120,
+        40,
+        40,
+        120,
+        40,
+        40,
+        80
+      ],
+      "source_alpha_union_bbox": [
+        0,
+        53,
+        230,
+        194
+      ],
+      "transform": {
+        "scale": 1.008695652173913,
+        "resized_size": [
+          232,
+          142
+        ],
+        "offset": [
+          204,
+          188
+        ],
+        "normalized_alpha_bbox": [
+          204,
+          188,
+          436,
+          330
+        ]
+      },
+      "video": {
+        "source_cycle_ms": 1560,
+        "repeat_cycles": 1,
+        "output_duration_ms": 1560,
+        "tick_ms": 40,
+        "output_fps": "25",
+        "output_frames": 39,
+        "probe": {
+          "programs": [],
+          "stream_groups": [],
+          "streams": [
+            {
+              "codec_name": "vp9",
+              "width": 640,
+              "height": 360,
+              "r_frame_rate": "25/1",
+              "nb_read_frames": "39",
+              "tags": {
+                "ALPHA_MODE": "1"
+              }
+            }
+          ],
+          "format": {
+            "duration": "1.560000"
+          }
+        },
+        "decoded_alpha_verified": true,
+        "max_decoded_alpha_error_255": 1,
+        "decoded_alpha_bbox": [
+          204,
+          188,
+          436,
+          330
+        ],
+        "sha256": "e52ff40f86f26fb4077db1ff05c40cf1833d4f2a5c2f611e98ae41ceaafa053d",
+        "path": "dsh-pet/assets/webm/正常挂机中.webm"
+      }
+    },
+    {
+      "name": "焦急",
+      "source": "gif/焦急.gif",
+      "source_sha256": "cfa4156b7e8e269668c3e11b05aabd5a3fd6859ae5708a94e0d2dec7a7960eb6",
+      "source_size": [
+        240,
+        240
+      ],
+      "source_frames": 4,
+      "source_durations_ms": [
+        60,
+        60,
+        60,
+        60
+      ],
+      "source_alpha_union_bbox": [
+        58,
+        48,
+        174,
+        197
+      ],
+      "transform": {
+        "scale": 1.74496644295302,
+        "resized_size": [
+          202,
+          260
+        ],
+        "offset": [
+          219,
+          70
+        ],
+        "normalized_alpha_bbox": [
+          219,
+          70,
+          421,
+          330
+        ]
+      },
+      "video": {
+        "source_cycle_ms": 240,
+        "repeat_cycles": 5,
+        "output_duration_ms": 1200,
+        "tick_ms": 60,
+        "output_fps": "50/3",
+        "output_frames": 20,
+        "probe": {
+          "programs": [],
+          "stream_groups": [],
+          "streams": [
+            {
+              "codec_name": "vp9",
+              "width": 640,
+              "height": 360,
+              "r_frame_rate": "50/3",
+              "nb_read_frames": "20",
+              "tags": {
+                "ALPHA_MODE": "1"
+              }
+            }
+          ],
+          "format": {
+            "duration": "1.200000"
+          }
+        },
+        "decoded_alpha_verified": true,
+        "max_decoded_alpha_error_255": 1,
+        "decoded_alpha_bbox": [
+          219,
+          70,
+          421,
+          330
+        ],
+        "sha256": "6250de848e311ffb49c31937fcedd9ac31de5cb12bc887155067c9493fe06194",
+        "path": "dsh-pet/assets/webm/焦急.webm"
+      }
+    },
+    {
+      "name": "需要token",
+      "source": "gif/需要token.gif",
+      "source_sha256": "4255ee2579d4908954e0b43a9841247639ad4b132b73d25a25050225dc2c1242",
+      "source_size": [
+        240,
+        240
+      ],
+      "source_frames": 4,
+      "source_durations_ms": [
+        60,
+        60,
+        60,
+        60
+      ],
+      "source_alpha_union_bbox": [
+        50,
+        36,
+        201,
+        197
+      ],
+      "transform": {
+        "scale": 1.5364238410596027,
+        "resized_size": [
+          232,
+          247
+        ],
+        "offset": [
+          204,
+          83
+        ],
+        "normalized_alpha_bbox": [
+          204,
+          83,
+          436,
+          330
+        ]
+      },
+      "video": {
+        "source_cycle_ms": 240,
+        "repeat_cycles": 5,
+        "output_duration_ms": 1200,
+        "tick_ms": 60,
+        "output_fps": "50/3",
+        "output_frames": 20,
+        "probe": {
+          "programs": [],
+          "stream_groups": [],
+          "streams": [
+            {
+              "codec_name": "vp9",
+              "width": 640,
+              "height": 360,
+              "r_frame_rate": "50/3",
+              "nb_read_frames": "20",
+              "tags": {
+                "ALPHA_MODE": "1"
+              }
+            }
+          ],
+          "format": {
+            "duration": "1.200000"
+          }
+        },
+        "decoded_alpha_verified": true,
+        "max_decoded_alpha_error_255": 1,
+        "decoded_alpha_bbox": [
+          204,
+          83,
+          436,
+          330
+        ],
+        "sha256": "b8d337e4a5304e8a1b94cf182ed9b981f5dfd6170dbe363918b5eadd72643ce2",
+        "path": "dsh-pet/assets/webm/需要token.webm"
+      }
+    },
+    {
+      "name": "霸气到来",
+      "source": "gif/霸气到来.gif",
+      "source_sha256": "030c9dfe8f9f31036865d6b9f78b897aaeedc2ebfa1875b3e1797c557c4046da",
+      "source_size": [
+        480,
+        480
+      ],
+      "source_frames": 6,
+      "source_durations_ms": [
+        140,
+        140,
+        140,
+        140,
+        140,
+        140
+      ],
+      "source_alpha_union_bbox": [
+        63,
+        79,
+        445,
+        456
+      ],
+      "transform": {
+        "scale": 0.6073298429319371,
+        "resized_size": [
+          232,
+          229
+        ],
+        "offset": [
+          204,
+          101
+        ],
+        "normalized_alpha_bbox": [
+          204,
+          101,
+          436,
+          330
+        ]
+      },
+      "video": {
+        "source_cycle_ms": 840,
+        "repeat_cycles": 2,
+        "output_duration_ms": 1680,
+        "tick_ms": 140,
+        "output_fps": "50/7",
+        "output_frames": 12,
+        "probe": {
+          "programs": [],
+          "stream_groups": [],
+          "streams": [
+            {
+              "codec_name": "vp9",
+              "width": 640,
+              "height": 360,
+              "r_frame_rate": "50/7",
+              "nb_read_frames": "12",
+              "tags": {
+                "ALPHA_MODE": "1"
+              }
+            }
+          ],
+          "format": {
+            "duration": "1.680000"
+          }
+        },
+        "decoded_alpha_verified": true,
+        "max_decoded_alpha_error_255": 1,
+        "decoded_alpha_bbox": [
+          204,
+          101,
+          436,
+          330
+        ],
+        "sha256": "56c0fc8ffb98b4640116744107761d8a179973dcffa01e3e382401dd0569d218",
+        "path": "dsh-pet/assets/webm/霸气到来.webm"
+      }
+    }
+  ],
+  "animation_files": [
+    {
+      "name": "安静待机",
+      "source_animation": "安静待机",
+      "source_gif": "gif/安静待机.gif",
+      "path": "dsh-pet/assets/webm/安静待机.webm",
+      "sha256": "bc39de5cf66e4e4a94bb7ea1c1aa5db89f43f5074675ba6fdedc9fafacc966b5"
+    },
+    {
+      "name": "霸气到来",
+      "source_animation": "霸气到来",
+      "source_gif": "gif/霸气到来.gif",
+      "path": "dsh-pet/assets/webm/霸气到来.webm",
+      "sha256": "56c0fc8ffb98b4640116744107761d8a179973dcffa01e3e382401dd0569d218"
+    },
+    {
+      "name": "呆滞",
+      "source_animation": "呆滞",
+      "source_gif": "gif/呆滞.gif",
+      "path": "dsh-pet/assets/webm/呆滞.webm",
+      "sha256": "2aeda56e86795511e23e343e7991a6db66a64b22df00ad8d55b7d6eda29f2ec8"
+    },
+    {
+      "name": "焦急",
+      "source_animation": "焦急",
+      "source_gif": "gif/焦急.gif",
+      "path": "dsh-pet/assets/webm/焦急.webm",
+      "sha256": "6250de848e311ffb49c31937fcedd9ac31de5cb12bc887155067c9493fe06194"
+    },
+    {
+      "name": "拒绝",
+      "source_animation": "拒绝",
+      "source_gif": "gif/拒绝.gif",
+      "path": "dsh-pet/assets/webm/拒绝.webm",
+      "sha256": "87d9377faf104c4a0af871aa88fc993922b49450b2372b22ded3b630c5a4ec67"
+    },
+    {
+      "name": "你真棒",
+      "source_animation": "你真棒",
+      "source_gif": "gif/你真棒.gif",
+      "path": "dsh-pet/assets/webm/你真棒.webm",
+      "sha256": "c47299952843cacde479bd7db2879203094298a1212ef6e2d880e646a69ad59d"
+    },
+    {
+      "name": "需要token",
+      "source_animation": "需要token",
+      "source_gif": "gif/需要token.gif",
+      "path": "dsh-pet/assets/webm/需要token.webm",
+      "sha256": "b8d337e4a5304e8a1b94cf182ed9b981f5dfd6170dbe363918b5eadd72643ce2"
+    },
+    {
+      "name": "正常挂机中",
+      "source_animation": "正常挂机中",
+      "source_gif": "gif/正常挂机中.gif",
+      "path": "dsh-pet/assets/webm/正常挂机中.webm",
+      "sha256": "e52ff40f86f26fb4077db1ff05c40cf1833d4f2a5c2f611e98ae41ceaafa053d"
+    },
+    {
+      "name": "待机-安静陪伴",
+      "source_animation": "安静待机",
+      "source_gif": "gif/安静待机.gif",
+      "path": "dsh-pet/assets/webm/待机-安静陪伴.webm",
+      "sha256": "bc39de5cf66e4e4a94bb7ea1c1aa5db89f43f5074675ba6fdedc9fafacc966b5"
+    },
+    {
+      "name": "待机-悠闲挂机",
+      "source_animation": "正常挂机中",
+      "source_gif": "gif/正常挂机中.gif",
+      "path": "dsh-pet/assets/webm/待机-悠闲挂机.webm",
+      "sha256": "e52ff40f86f26fb4077db1ff05c40cf1833d4f2a5c2f611e98ae41ceaafa053d"
+    },
+    {
+      "name": "转向-霸气到来",
+      "source_animation": "霸气到来",
+      "source_gif": "gif/霸气到来.gif",
+      "path": "dsh-pet/assets/webm/转向-霸气到来.webm",
+      "sha256": "56c0fc8ffb98b4640116744107761d8a179973dcffa01e3e382401dd0569d218"
+    },
+    {
+      "name": "拖拽-焦急",
+      "source_animation": "焦急",
+      "source_gif": "gif/焦急.gif",
+      "path": "dsh-pet/assets/webm/拖拽-焦急.webm",
+      "sha256": "6250de848e311ffb49c31937fcedd9ac31de5cb12bc887155067c9493fe06194"
+    },
+    {
+      "name": "拖拽-呆滞",
+      "source_animation": "呆滞",
+      "source_gif": "gif/呆滞.gif",
+      "path": "dsh-pet/assets/webm/拖拽-呆滞.webm",
+      "sha256": "2aeda56e86795511e23e343e7991a6db66a64b22df00ad8d55b7d6eda29f2ec8"
+    },
+    {
+      "name": "点击-你真棒",
+      "source_animation": "你真棒",
+      "source_gif": "gif/你真棒.gif",
+      "path": "dsh-pet/assets/webm/点击-你真棒.webm",
+      "sha256": "c47299952843cacde479bd7db2879203094298a1212ef6e2d880e646a69ad59d"
+    },
+    {
+      "name": "点击-霸气到来",
+      "source_animation": "霸气到来",
+      "source_gif": "gif/霸气到来.gif",
+      "path": "dsh-pet/assets/webm/点击-霸气到来.webm",
+      "sha256": "56c0fc8ffb98b4640116744107761d8a179973dcffa01e3e382401dd0569d218"
+    },
+    {
+      "name": "点击-拒绝",
+      "source_animation": "拒绝",
+      "source_gif": "gif/拒绝.gif",
+      "path": "dsh-pet/assets/webm/点击-拒绝.webm",
+      "sha256": "87d9377faf104c4a0af871aa88fc993922b49450b2372b22ded3b630c5a4ec67"
+    },
+    {
+      "name": "点击-需要token",
+      "source_animation": "需要token",
+      "source_gif": "gif/需要token.gif",
+      "path": "dsh-pet/assets/webm/点击-需要token.webm",
+      "sha256": "b8d337e4a5304e8a1b94cf182ed9b981f5dfd6170dbe363918b5eadd72643ce2"
+    },
+    {
+      "name": "移动-霸气到来",
+      "source_animation": "霸气到来",
+      "source_gif": "gif/霸气到来.gif",
+      "path": "dsh-pet/assets/webm/移动-霸气到来.webm",
+      "sha256": "56c0fc8ffb98b4640116744107761d8a179973dcffa01e3e382401dd0569d218"
+    },
+    {
+      "name": "移动-悠闲漫游",
+      "source_animation": "正常挂机中",
+      "source_gif": "gif/正常挂机中.gif",
+      "path": "dsh-pet/assets/webm/移动-悠闲漫游.webm",
+      "sha256": "e52ff40f86f26fb4077db1ff05c40cf1833d4f2a5c2f611e98ae41ceaafa053d"
+    },
+    {
+      "name": "余额-充足",
+      "source_animation": "你真棒",
+      "source_gif": "gif/你真棒.gif",
+      "path": "dsh-pet/assets/webm/余额-充足.webm",
+      "sha256": "c47299952843cacde479bd7db2879203094298a1212ef6e2d880e646a69ad59d"
+    },
+    {
+      "name": "余额-精神满满",
+      "source_animation": "霸气到来",
+      "source_gif": "gif/霸气到来.gif",
+      "path": "dsh-pet/assets/webm/余额-精神满满.webm",
+      "sha256": "56c0fc8ffb98b4640116744107761d8a179973dcffa01e3e382401dd0569d218"
+    },
+    {
+      "name": "余额-平稳",
+      "source_animation": "安静待机",
+      "source_gif": "gif/安静待机.gif",
+      "path": "dsh-pet/assets/webm/余额-平稳.webm",
+      "sha256": "bc39de5cf66e4e4a94bb7ea1c1aa5db89f43f5074675ba6fdedc9fafacc966b5"
+    },
+    {
+      "name": "余额-需要token",
+      "source_animation": "需要token",
+      "source_gif": "gif/需要token.gif",
+      "path": "dsh-pet/assets/webm/余额-需要token.webm",
+      "sha256": "b8d337e4a5304e8a1b94cf182ed9b981f5dfd6170dbe363918b5eadd72643ce2"
+    },
+    {
+      "name": "余额-焦急",
+      "source_animation": "焦急",
+      "source_gif": "gif/焦急.gif",
+      "path": "dsh-pet/assets/webm/余额-焦急.webm",
+      "sha256": "6250de848e311ffb49c31937fcedd9ac31de5cb12bc887155067c9493fe06194"
+    },
+    {
+      "name": "余额-用完了",
+      "source_animation": "拒绝",
+      "source_gif": "gif/拒绝.gif",
+      "path": "dsh-pet/assets/webm/余额-用完了.webm",
+      "sha256": "87d9377faf104c4a0af871aa88fc993922b49450b2372b22ded3b630c5a4ec67"
+    },
+    {
+      "name": "碎碎念-安静陪伴",
+      "source_animation": "安静待机",
+      "source_gif": "gif/安静待机.gif",
+      "path": "dsh-pet/assets/webm/碎碎念-安静陪伴.webm",
+      "sha256": "bc39de5cf66e4e4a94bb7ea1c1aa5db89f43f5074675ba6fdedc9fafacc966b5"
+    },
+    {
+      "name": "碎碎念-悠闲挂机",
+      "source_animation": "正常挂机中",
+      "source_gif": "gif/正常挂机中.gif",
+      "path": "dsh-pet/assets/webm/碎碎念-悠闲挂机.webm",
+      "sha256": "e52ff40f86f26fb4077db1ff05c40cf1833d4f2a5c2f611e98ae41ceaafa053d"
+    },
+    {
+      "name": "碎碎念-想要零食",
+      "source_animation": "需要token",
+      "source_gif": "gif/需要token.gif",
+      "path": "dsh-pet/assets/webm/碎碎念-想要零食.webm",
+      "sha256": "b8d337e4a5304e8a1b94cf182ed9b981f5dfd6170dbe363918b5eadd72643ce2"
+    },
+    {
+      "name": "工作状态-思考",
+      "source_animation": "呆滞",
+      "source_gif": "gif/呆滞.gif",
+      "path": "dsh-pet/assets/webm/工作状态-思考.webm",
+      "sha256": "2aeda56e86795511e23e343e7991a6db66a64b22df00ad8d55b7d6eda29f2ec8"
+    },
+    {
+      "name": "工作状态-忙碌",
+      "source_animation": "正常挂机中",
+      "source_gif": "gif/正常挂机中.gif",
+      "path": "dsh-pet/assets/webm/工作状态-忙碌.webm",
+      "sha256": "e52ff40f86f26fb4077db1ff05c40cf1833d4f2a5c2f611e98ae41ceaafa053d"
+    },
+    {
+      "name": "工作状态-整理",
+      "source_animation": "安静待机",
+      "source_gif": "gif/安静待机.gif",
+      "path": "dsh-pet/assets/webm/工作状态-整理.webm",
+      "sha256": "bc39de5cf66e4e4a94bb7ea1c1aa5db89f43f5074675ba6fdedc9fafacc966b5"
+    },
+    {
+      "name": "工作状态-等待",
+      "source_animation": "焦急",
+      "source_gif": "gif/焦急.gif",
+      "path": "dsh-pet/assets/webm/工作状态-等待.webm",
+      "sha256": "6250de848e311ffb49c31937fcedd9ac31de5cb12bc887155067c9493fe06194"
+    },
+    {
+      "name": "工作状态-完成",
+      "source_animation": "你真棒",
+      "source_gif": "gif/你真棒.gif",
+      "path": "dsh-pet/assets/webm/工作状态-完成.webm",
+      "sha256": "c47299952843cacde479bd7db2879203094298a1212ef6e2d880e646a69ad59d"
+    },
+    {
+      "name": "工作状态-出错",
+      "source_animation": "拒绝",
+      "source_gif": "gif/拒绝.gif",
+      "path": "dsh-pet/assets/webm/工作状态-出错.webm",
+      "sha256": "87d9377faf104c4a0af871aa88fc993922b49450b2372b22ded3b630c5a4ec67"
+    }
+  ],
+  "graphics": [
+    {
+      "path": "dsh-pet/assets/memes/你真棒.png",
+      "sha256": "c67544a52c605d406c906ede27932b511c5829ef094f0cabad699a0c195862fc",
+      "size": [
+        320,
+        320
+      ],
+      "source": "gif/你真棒.gif",
+      "kind": "static-meme"
+    },
+    {
+      "path": "dsh-pet/assets/memes/呆滞.png",
+      "sha256": "233aaa60ab623e92f7b173dbef7fc011f40b27797aa4460f1d7a2c36729bc38a",
+      "size": [
+        320,
+        320
+      ],
+      "source": "gif/呆滞.gif",
+      "kind": "static-meme"
+    },
+    {
+      "path": "dsh-pet/assets/memes/安静待机.png",
+      "sha256": "3ca0c1c98fe8be01f4bce83807317239354bf3c44a423fd2a0113bb9fa2e2c6a",
+      "size": [
+        320,
+        320
+      ],
+      "source": "gif/安静待机.gif",
+      "kind": "static-meme"
+    },
+    {
+      "path": "dsh-pet/assets/memes/拒绝.png",
+      "sha256": "36787efef272b76dbac1aed4143e1f3a881323a6f59ed97828023ffc04327868",
+      "size": [
+        320,
+        320
+      ],
+      "source": "gif/拒绝.gif",
+      "kind": "static-meme"
+    },
+    {
+      "path": "dsh-pet/assets/memes/正常挂机中.png",
+      "sha256": "2a382a41e0568118cc2d7e08a3d7019dbfec51e9f965463a574377d1a2290719",
+      "size": [
+        320,
+        320
+      ],
+      "source": "gif/正常挂机中.gif",
+      "kind": "static-meme"
+    },
+    {
+      "path": "dsh-pet/assets/memes/焦急.png",
+      "sha256": "7d1abddeda6c05f7109c1a55e11ca897674b96ed8ac8778c1a5e9958397c227c",
+      "size": [
+        320,
+        320
+      ],
+      "source": "gif/焦急.gif",
+      "kind": "static-meme"
+    },
+    {
+      "path": "dsh-pet/assets/memes/需要token.png",
+      "sha256": "9e5c342853021211a354bc591013370195e8d834165b7189b4dc14d7b61f1848",
+      "size": [
+        320,
+        320
+      ],
+      "source": "gif/需要token.gif",
+      "kind": "static-meme"
+    },
+    {
+      "path": "dsh-pet/assets/memes/霸气到来.png",
+      "sha256": "aa1c433dde3f193bfa7f3cb4708979ee8b295be229ca749bb74b5c47ee0d0b4a",
+      "size": [
+        320,
+        320
+      ],
+      "source": "gif/霸气到来.gif",
+      "kind": "static-meme"
+    },
+    {
+      "path": "dsh-pet/assets/logo.png",
+      "sha256": "b1c4a8e0a8d7ac9060feb68f29e704ae0381a96f37741d6b718f71f8ef1107cc",
+      "size": [
+        256,
+        256
+      ],
+      "source": "gif/你真棒.gif",
+      "kind": "application-logo"
+    },
+    {
+      "path": "dsh-pet/assets/pic/notify-done.png",
+      "sha256": "15486b9677eab0eadfdfe96b88de9149f5b723e070ee6e15d6f679f000cc623a",
+      "size": [
+        192,
+        192
+      ],
+      "source": "gif/你真棒.gif",
+      "kind": "notification"
+    },
+    {
+      "path": "dsh-pet/assets/pic/notify-error.png",
+      "sha256": "80d8de27ae6d5bd602988a54c9e0ff49fdf79302b47282f63f98f22853e887f5",
+      "size": [
+        192,
+        192
+      ],
+      "source": "gif/焦急.gif",
+      "kind": "notification"
+    },
+    {
+      "path": "dsh-pet/assets/pic/notify-truncated.png",
+      "sha256": "58a2aec3c14a55dd0f1d336d678eb5f6dd4441a5b9987cd5ee5349cf06959810",
+      "size": [
+        192,
+        192
+      ],
+      "source": "gif/呆滞.gif",
+      "kind": "notification"
+    },
+    {
+      "path": "dsh-pet/assets/pic/notify-approval.png",
+      "sha256": "83e2dff25365f14975df7c1bb79267ff99ee8705f952d533f8e497a4a534b851",
+      "size": [
+        192,
+        192
+      ],
+      "source": "gif/拒绝.gif",
+      "kind": "notification"
+    },
+    {
+      "path": "dsh-pet/assets/pic/notify-question.png",
+      "sha256": "7371812b85d273ad7375d058066eb58c78e5edfaa23733d3f7c5f6c9fdbf245b",
+      "size": [
+        192,
+        192
+      ],
+      "source": "gif/需要token.gif",
+      "kind": "notification"
+    },
+    {
+      "path": "dsh-pet/assets/pic/notify-test.png",
+      "sha256": "7705c35d0ba82ca88d4cc7693960f698decdea13414802a0e965050e25921e9a",
+      "size": [
+        192,
+        192
+      ],
+      "source": "gif/霸气到来.gif",
+      "kind": "notification"
+    },
+    {
+      "path": "dsh-pet/assets/pic/cursor-grab.png",
+      "sha256": "cb243d4ead3d1ef522d87aebf85dc73c0cc7c684466b1d84811892568b44ed03",
+      "size": [
+        32,
+        32
+      ],
+      "source": null,
+      "kind": "beagle-paw-cursor"
+    },
+    {
+      "path": "dsh-pet/assets/pic/cursor-grabbing.png",
+      "sha256": "d090e8ead21a55ff9e0b4fbd80adcd2682afd743da57a611f12e4ce026bec08c",
+      "size": [
+        32,
+        32
+      ],
+      "source": null,
+      "kind": "beagle-paw-cursor"
+    },
+    {
+      "path": "docs/bige-preview.png",
+      "sha256": "9b3641f4b4278c4ebc6f119af037e25a8a5c837e33efddadfbdac02efbfb8339",
+      "size": [
+        1280,
+        1680
+      ],
+      "source": null,
+      "kind": "skin-preview"
+    }
+  ]
+}
