@@ -51,6 +51,14 @@
 - 每分钟按原权重保留随机转向和漫游，期间继续循环同一表情；固定宠物不自主移动。真实 Electron 验证朝向翻转和水平位移，位移前后及短片再次循环后素材名称保持一致。
 - 最终包：`dist/比格桌宠-0.1.0-win-x64.zip`，180013339 字节（171.7 MiB）、9315 个文件；SHA256：`c93ff9b426b053a6350e3becf05422bcc3290a5842f0b3e963e3816a0a34598b`。ZIP 校验文件位于相邻 `.zip.sha256`；完整解压后的 EXE 与所需 DLL/素材目录同时保留。
 
+## 原版 DeepSeek 启动脚本（2026-10-26）
+
+- `启动原版DeepSeek桌宠.cmd` 指向相邻原版 `../dsh-pet/dsh-pet/`，原版源码和素材未修改。原版依赖安装、构建及 `--original-deepseek --check` 通过，比格版原有 `--check` 也通过。
+- 从 `C:\Windows\Temp` 实际运行父目录 CMD，服务健康状态确认 `pluginRoot` 为原版目录；原版配置不含比格动画行为设置。真实 Electron 窗口捕获确认原版角色实际出画。
+- 第二次运行启动 CMD 未增加后端实例；关闭 CMD 正常停止后端和 helper，并清理运行状态及启动锁。
+- 原版 DSH 配置、聊天记录独立保存于 `.local/original-deepseek/dsh/`；Chromium profile 沿用原版默认位置。复用已下载的 Electron，不读取比格版 DSH 配置。
+- 本地验证结果：`.local/original-deepseek/validation.json`；截图：`.local/original-deepseek/verified-original.png`。未额外验证原版所有交互或模型调用。
+
 ## 验证边界
 
 未使用真实 API Key 调用付费模型，也没有在 DSH 宿主里运行真实会话。聊天/碎碎念沿用上游实现，需用户配置模型；余额、会话工作状态、DSH 系统通知仍需 DSH 宿主。相关入口和状态档位保留，不能把独立模式的测试当作完整 DSH 联动的实测证明。

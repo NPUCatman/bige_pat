@@ -16,9 +16,19 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const app = join(root, "dsh-pet");
-const args = process.argv.slice(2);
-const home = resolve(root, process.env.BIGE_PET_HOME || join(".local", "dsh"));
+const originalDeepSeek = process.argv[2] === "--original-deepseek";
+const app = originalDeepSeek
+  ? resolve(root, "..", "dsh-pet", "dsh-pet")
+  : join(root, "dsh-pet");
+const label = originalDeepSeek ? "原版 DeepSeek 桌宠" : "比格桌宠";
+const args = process.argv.slice(originalDeepSeek ? 3 : 2);
+const home = resolve(
+  root,
+  originalDeepSeek
+    ? process.env.DEEPSEEK_PET_HOME ||
+        join(".local", "original-deepseek", "dsh")
+    : process.env.BIGE_PET_HOME || join(".local", "dsh"),
+);
 const env = {
   ...process.env,
   DSH_HOME: home,
@@ -30,7 +40,11 @@ const inspectOnly = args.some((arg) =>
 const runtimeFile = join(home, "dsh-pet", "standalone-runtime.json");
 const [major, minor] = process.versions.node.split(".").map(Number);
 if (major < 22 || (major === 22 && minor < 12)) {
-  console.error("比格桌宠需要 Node.js 22.12 或更新版本。");
+  console.error(`${label}需要 Node.js 22.12 或更新版本。`);
+  process.exit(1);
+}
+if (!existsSync(join(app, "package.json"))) {
+  console.error(`${label}项目不存在：${app}`);
   process.exit(1);
 }
 
@@ -144,16 +158,22 @@ function acquireLaunchLock() {
 
 const launchLock = inspectOnly ? null : acquireLaunchLock();
 if (!inspectOnly && !launchLock) {
-  console.log("比格桌宠已经在启动或运行。关闭可运行 npm stop。");
+  console.log(`${label}已经在启动或运行。请使用对应的关闭脚本退出。`);
   process.exit(0);
 }
 process.on("exit", () => launchLock?.release());
 
-// 只复用已安装的运行时；配置、记忆、Chromium profile 和 DPI 缓存均使用本项目的数据目录。
+// 只复用已安装的运行时；两版配置和记忆分别使用各自的 DSH_HOME。
+// 比格版还支持 DSH_PET_USER_DATA_DIR；原版 Chromium profile 沿用上游默认位置。
 if (!env.DSH_PET_ELECTRON_PATH) {
   const executable = process.platform === "win32" ? "electron.exe" : "electron";
-  const existing = join(homedir(), ".dsh", "electron", executable);
-  if (existsSync(existing)) env.DSH_PET_ELECTRON_PATH = existing;
+  const existing = [
+    ...(originalDeepSeek
+      ? [join(root, ".local", "dsh", "electron", executable)]
+      : []),
+    join(homedir(), ".dsh", "electron", executable),
+  ].find((file) => existsSync(file));
+  if (existing) env.DSH_PET_ELECTRON_PATH = existing;
 }
 
 function npm(command) {
@@ -166,9 +186,23 @@ function npm(command) {
   if (result.status !== 0) process.exit(result.status || 1);
 }
 
-if (!existsSync(join(app, "node_modules", ".package-lock.json"))) {
+const appPackage = JSON.parse(readFileSync(join(app, "package.json"), "utf8"));
+const dependenciesReady = originalDeepSeek
+  ? Object.keys({
+      ...appPackage.dependencies,
+      ...appPackage.devDependencies,
+      ...appPackage.peerDependencies,
+    }).every((name) =>
+      existsSync(join(app, "node_modules", name, "package.json")),
+    )
+  : existsSync(join(app, "node_modules", ".package-lock.json"));
+if (!dependenciesReady) {
   console.log("首次启动：正在安装依赖……");
-  npm("install --no-audit --no-fund");
+  npm(
+    originalDeepSeek
+      ? "install --no-package-lock --prefer-offline --no-audit --no-fund"
+      : "install --no-audit --no-fund",
+  );
 }
 
 function newest(path) {
@@ -185,7 +219,9 @@ const outputs = [
   "lib/client.js",
   "runtime/electron-helper/shared-core.js",
 ];
-const buildStamp = join(root, ".local", "build-stamp");
+const buildStamp = originalDeepSeek
+  ? join(root, ".local", "original-deepseek", "build-stamp")
+  : join(root, ".local", "build-stamp");
 const buildTime = existsSync(buildStamp) ? statSync(buildStamp).mtimeMs : 0;
 const hasOutputs = outputs.every((file) => existsSync(join(app, file)));
 const latestSource = Math.max(
@@ -198,7 +234,7 @@ const latestSource = Math.max(
   ].map((file) => newest(join(app, file))),
 );
 if (!hasOutputs || latestSource > buildTime) {
-  console.log("正在构建比格桌宠……");
+  console.log(`正在构建${label}……`);
   npm("run build");
   mkdirSync(dirname(buildStamp), { recursive: true });
   writeFileSync(buildStamp, new Date().toISOString());
@@ -218,7 +254,7 @@ if (!inspectOnly && existsSync(runtimeFile)) {
       resolve(status.pluginRoot) === app
     ) {
       console.log(
-        "比格桌宠已经在运行。右键桌宠打开菜单；关闭可运行 npm stop。",
+        `${label}已经在运行。右键桌宠打开菜单；请使用对应的关闭脚本退出。`,
       );
       process.exit(0);
     }
@@ -227,7 +263,7 @@ if (!inspectOnly && existsSync(runtimeFile)) {
   }
 }
 
-console.log(`比格桌宠 · 数据目录：${home}`);
+console.log(`${label} · 数据目录：${home}`);
 const child = spawn(
   process.execPath,
   [join(app, "lib", "standalone.js"), ...args],
